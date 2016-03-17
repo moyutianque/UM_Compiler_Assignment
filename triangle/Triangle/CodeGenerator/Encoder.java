@@ -157,7 +157,23 @@ public final class Encoder implements Visitor {
     emit(Machine.JUMPIFop, Machine.trueRep, Machine.CBr, loopAddr);
     return null;
   }
-
+/* mark */
+ public Object visitForCommand(ForCommand ast, Object o){
+     Frame frame = (Frame) o;
+     
+     //execute e1 and e2 to assign the value to m and n
+     Integer valSize = (Integer) ast.E1.visit(this, frame);
+     encodeStore(ast.m, new Frame (frame, valSize.intValue()),
+		valSize.intValue());
+     Integer valSize2 = (Integer) ast.E2.visit(this, frame);
+     encodeStore(ast.m, new Frame (frame, valSize2.intValue()),
+		valSize2.intValue());
+        
+     
+     
+     
+     
+ }
 
   // Expressions
   public Object visitArrayExpression(ArrayExpression ast, Object o) {

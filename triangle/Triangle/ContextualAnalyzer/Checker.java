@@ -154,6 +154,13 @@ public final class Checker implements Visitor {
     return null;
   }
 
+/* mark */
+ public Objext visitForCommand(ForCommand ast, Object o){
+     
+     
+     return null;
+ }
+ 
   // Expressions
 
   // Returns the TypeDenoter denoting the type of the expression. Does

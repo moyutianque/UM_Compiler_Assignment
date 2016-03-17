@@ -120,7 +120,11 @@ public class LayoutVisitor implements Visitor {
   public Object visitWhileCommand(WhileCommand ast, Object obj) {
     return layoutBinary("WhileCom.", ast.E, ast.C);
   }
-
+  
+  /* mark */
+  public Object visitForCommand(ForCommand ast, Object obj){
+     
+  }
 
   // Expressions
   public Object visitArrayExpression(ArrayExpression ast, Object obj) {
