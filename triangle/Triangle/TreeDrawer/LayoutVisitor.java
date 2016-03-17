@@ -26,6 +26,7 @@ import Triangle.AbstractSyntaxTrees.BinaryOperatorDeclaration;
 import Triangle.AbstractSyntaxTrees.BoolTypeDenoter;
 import Triangle.AbstractSyntaxTrees.CallCommand;
 import Triangle.AbstractSyntaxTrees.CallExpression;
+import Triangle.AbstractSyntaxTrees.CaseCommand;
 import Triangle.AbstractSyntaxTrees.CharTypeDenoter;
 import Triangle.AbstractSyntaxTrees.CharacterExpression;
 import Triangle.AbstractSyntaxTrees.CharacterLiteral;
@@ -80,6 +81,7 @@ import Triangle.AbstractSyntaxTrees.VarFormalParameter;
 import Triangle.AbstractSyntaxTrees.Visitor;
 import Triangle.AbstractSyntaxTrees.VnameExpression;
 import Triangle.AbstractSyntaxTrees.WhileCommand;
+import Triangle.AbstractSyntaxTrees.ForCommand;
 
 public class LayoutVisitor implements Visitor {
 
@@ -121,10 +123,15 @@ public class LayoutVisitor implements Visitor {
     return layoutBinary("WhileCom.", ast.E, ast.C);
   }
   
-  /* mark */
-  public Object visitForCommand(ForCommand ast, Object obj){
-     
+  /*mark: for command */
+  public Object visitForCommand(ForCommand ast, Object obj) {
+    return layoutQuaternary("ForCom.", ast.V, ast.E1, ast.E2, ast.C);
   }
+
+  public Object visitCaseCommand(CaseCommand caseCommand, Object o) {
+    // TODO Auto-generated method stub
+    return null;
+}
 
   // Expressions
   public Object visitArrayExpression(ArrayExpression ast, Object obj) {
@@ -463,18 +470,18 @@ public class LayoutVisitor implements Visitor {
 
     while (lower != null && upper != null) {
         d = offset(x, y, lower.dx, lower.dy, upper.dx, upper.dy);
-	x += d;
-	total += d;
+    x += d;
+    total += d;
 
-	if (y + lower.dy <= upper.dy) {
-	  x += lower.dx;
-	  y += lower.dy;
-	  lower = lower.link;
-	} else {
-	  x -= upper.dx;
-	  y -= upper.dy;
-	  upper = upper.link;
-	}
+    if (y + lower.dy <= upper.dy) {
+      x += lower.dx;
+      y += lower.dy;
+      lower = lower.link;
+    } else {
+      x -= upper.dx;
+      y -= upper.dy;
+      upper = upper.link;
+    }
       }
 
       if (lower != null) {

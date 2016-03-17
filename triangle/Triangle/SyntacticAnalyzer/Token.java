@@ -73,37 +73,41 @@ final class Token extends Object {
     DO			= 7,
     ELSE		= 8,
     END			= 9,
-    FUNC		= 10,
-    IF			= 11,
-    IN			= 12,
-    LET			= 13,
-    OF			= 14,
-    PROC		= 15,
-    RECORD		= 16,
-    THEN		= 17,
-    TYPE		= 18,
-    VAR			= 19,
-    WHILE		= 20,
+	FOR         = 10,     // add
+	FROM        = 11,     // add
+    FUNC		= 12,
+    IF			= 13,
+    IN			= 14,
+    LET			= 15,
+    OF			= 16,
+    PROC		= 17,
+    RECORD		= 18,
+    THEN		= 19,
+	TO          = 20,     // add
+    TYPE		= 21,
+    VAR			= 22,
+    WHILE		= 23,
+  CASE        = 38,      // add'
 
     // punctuation...
-    DOT			= 21,
-    COLON		= 22,
-    SEMICOLON	= 23,
-    COMMA		= 24,
-    BECOMES		= 25,
-    IS			= 26,
+    DOT			= 24,
+    COLON		= 25,
+    SEMICOLON	= 26,
+    COMMA		= 27,
+    BECOMES		= 28,
+    IS			= 29,
 
     // brackets...
-    LPAREN		= 27,
-    RPAREN		= 28,
-    LBRACKET	= 29,
-    RBRACKET	= 30,
-    LCURLY		= 31,
-    RCURLY		= 32,
+    LPAREN		= 30,
+    RPAREN		= 31,
+    LBRACKET	= 32,
+    RBRACKET	= 33,
+    LCURLY		= 34,
+    RCURLY		= 35,
 
     // special tokens...
-    EOT			= 33,
-    ERROR		= 34;
+    EOT			= 36,
+    ERROR		= 37;
 
   private static String[] tokenTable = new String[] {
     "<int>",
@@ -116,6 +120,8 @@ final class Token extends Object {
     "do",
     "else",
     "end",
+	"for",          //add
+	"from",         //add
     "func",
     "if",
     "in",
@@ -124,6 +130,7 @@ final class Token extends Object {
     "proc",
     "record",
     "then",
+	"to",          //add
     "type",
     "var",
     "while",
@@ -140,10 +147,11 @@ final class Token extends Object {
     "{",
     "}",
     "",
-    "<error>"
+    "<error>",
+  "case"
   };
 
   private final static int	firstReservedWord = Token.ARRAY,
-  				lastReservedWord  = Token.WHILE;
+                  lastReservedWord  = Token.WHILE;
 
 }

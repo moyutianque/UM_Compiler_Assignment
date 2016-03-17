@@ -14,73 +14,10 @@
 
 package Triangle.SyntacticAnalyzer;
 
+import java.util.LinkedHashMap;
+
 import Triangle.ErrorReporter;
-import Triangle.AbstractSyntaxTrees.ActualParameter;
-import Triangle.AbstractSyntaxTrees.ActualParameterSequence;
-import Triangle.AbstractSyntaxTrees.ArrayAggregate;
-import Triangle.AbstractSyntaxTrees.ArrayExpression;
-import Triangle.AbstractSyntaxTrees.ArrayTypeDenoter;
-import Triangle.AbstractSyntaxTrees.AssignCommand;
-import Triangle.AbstractSyntaxTrees.BinaryExpression;
-import Triangle.AbstractSyntaxTrees.CallCommand;
-import Triangle.AbstractSyntaxTrees.CallExpression;
-import Triangle.AbstractSyntaxTrees.CharacterExpression;
-import Triangle.AbstractSyntaxTrees.CharacterLiteral;
-import Triangle.AbstractSyntaxTrees.Command;
-import Triangle.AbstractSyntaxTrees.ConstActualParameter;
-import Triangle.AbstractSyntaxTrees.ConstDeclaration;
-import Triangle.AbstractSyntaxTrees.ConstFormalParameter;
-import Triangle.AbstractSyntaxTrees.Declaration;
-import Triangle.AbstractSyntaxTrees.DotVname;
-import Triangle.AbstractSyntaxTrees.EmptyActualParameterSequence;
-import Triangle.AbstractSyntaxTrees.EmptyCommand;
-import Triangle.AbstractSyntaxTrees.EmptyFormalParameterSequence;
-import Triangle.AbstractSyntaxTrees.Expression;
-import Triangle.AbstractSyntaxTrees.FieldTypeDenoter;
-import Triangle.AbstractSyntaxTrees.FormalParameter;
-import Triangle.AbstractSyntaxTrees.FormalParameterSequence;
-import Triangle.AbstractSyntaxTrees.FuncActualParameter;
-import Triangle.AbstractSyntaxTrees.FuncDeclaration;
-import Triangle.AbstractSyntaxTrees.FuncFormalParameter;
-import Triangle.AbstractSyntaxTrees.Identifier;
-import Triangle.AbstractSyntaxTrees.IfCommand;
-import Triangle.AbstractSyntaxTrees.IfExpression;
-import Triangle.AbstractSyntaxTrees.IntegerExpression;
-import Triangle.AbstractSyntaxTrees.IntegerLiteral;
-import Triangle.AbstractSyntaxTrees.LetCommand;
-import Triangle.AbstractSyntaxTrees.LetExpression;
-import Triangle.AbstractSyntaxTrees.MultipleActualParameterSequence;
-import Triangle.AbstractSyntaxTrees.MultipleArrayAggregate;
-import Triangle.AbstractSyntaxTrees.MultipleFieldTypeDenoter;
-import Triangle.AbstractSyntaxTrees.MultipleFormalParameterSequence;
-import Triangle.AbstractSyntaxTrees.MultipleRecordAggregate;
-import Triangle.AbstractSyntaxTrees.Operator;
-import Triangle.AbstractSyntaxTrees.ProcActualParameter;
-import Triangle.AbstractSyntaxTrees.ProcDeclaration;
-import Triangle.AbstractSyntaxTrees.ProcFormalParameter;
-import Triangle.AbstractSyntaxTrees.Program;
-import Triangle.AbstractSyntaxTrees.RecordAggregate;
-import Triangle.AbstractSyntaxTrees.RecordExpression;
-import Triangle.AbstractSyntaxTrees.RecordTypeDenoter;
-import Triangle.AbstractSyntaxTrees.SequentialCommand;
-import Triangle.AbstractSyntaxTrees.SequentialDeclaration;
-import Triangle.AbstractSyntaxTrees.SimpleTypeDenoter;
-import Triangle.AbstractSyntaxTrees.SimpleVname;
-import Triangle.AbstractSyntaxTrees.SingleActualParameterSequence;
-import Triangle.AbstractSyntaxTrees.SingleArrayAggregate;
-import Triangle.AbstractSyntaxTrees.SingleFieldTypeDenoter;
-import Triangle.AbstractSyntaxTrees.SingleFormalParameterSequence;
-import Triangle.AbstractSyntaxTrees.SingleRecordAggregate;
-import Triangle.AbstractSyntaxTrees.SubscriptVname;
-import Triangle.AbstractSyntaxTrees.TypeDeclaration;
-import Triangle.AbstractSyntaxTrees.TypeDenoter;
-import Triangle.AbstractSyntaxTrees.UnaryExpression;
-import Triangle.AbstractSyntaxTrees.VarActualParameter;
-import Triangle.AbstractSyntaxTrees.VarDeclaration;
-import Triangle.AbstractSyntaxTrees.VarFormalParameter;
-import Triangle.AbstractSyntaxTrees.Vname;
-import Triangle.AbstractSyntaxTrees.VnameExpression;
-import Triangle.AbstractSyntaxTrees.WhileCommand;
+import Triangle.AbstractSyntaxTrees.*;
 
 public class Parser {
 
@@ -331,6 +268,49 @@ public class Parser {
         Command cAST = parseSingleCommand();
         finish(commandPos);
         commandAST = new WhileCommand(eAST, cAST, commandPos);
+      }
+      break;
+
+    // mark: sperate the tokens of the for command and parse them
+    case Token.FOR:
+      {
+        acceptIt();
+        Vname vAST = parseVname();
+        accept(Token.FROM);
+        Expression e1AST = parseExpression();
+        accept(Token.TO);
+        Expression e2AST = parseExpression();
+        accept(Token.DO);
+        Command cAST = parseSingleCommand();
+        finish(commandPos);
+        commandAST = new ForCommand(vAST, e1AST, e2AST, cAST, commandPos);
+      }
+      break;
+
+    case Token.CASE:
+      {
+        LinkedHashMap <IntegerLiteral, Command> 
+        map = new LinkedHashMap<IntegerLiteral, Command>();
+        acceptIt();
+        Expression eAST = parseExpression();
+        accept(Token.OF);
+        IntegerLiteral ilAST = parseIntegerLiteral();
+        accept(Token.COLON);
+        Command cAST = parseSingleCommand();
+        accept(Token.SEMICOLON);
+        map.put(ilAST, cAST);
+        while(currentToken.kind != Token.ELSE) {
+          ilAST = parseIntegerLiteral();
+          accept(Token.COLON);
+          cAST = parseSingleCommand();
+          accept(Token.SEMICOLON);
+          map.put(ilAST, cAST);
+        }
+        accept(Token.ELSE);
+        accept(Token.COLON);
+        cAST = parseSingleCommand();
+        finish(commandPos);
+        commandAST = new CaseCommand(eAST, map, cAST, commandPos);
       }
       break;
 

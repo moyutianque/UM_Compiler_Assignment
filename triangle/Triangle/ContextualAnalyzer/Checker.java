@@ -14,77 +14,12 @@
 
 package Triangle.ContextualAnalyzer;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+
 import Triangle.ErrorReporter;
 import Triangle.StdEnvironment;
-import Triangle.AbstractSyntaxTrees.AnyTypeDenoter;
-import Triangle.AbstractSyntaxTrees.ArrayExpression;
-import Triangle.AbstractSyntaxTrees.ArrayTypeDenoter;
-import Triangle.AbstractSyntaxTrees.AssignCommand;
-import Triangle.AbstractSyntaxTrees.BinaryExpression;
-import Triangle.AbstractSyntaxTrees.BinaryOperatorDeclaration;
-import Triangle.AbstractSyntaxTrees.BoolTypeDenoter;
-import Triangle.AbstractSyntaxTrees.CallCommand;
-import Triangle.AbstractSyntaxTrees.CallExpression;
-import Triangle.AbstractSyntaxTrees.CharTypeDenoter;
-import Triangle.AbstractSyntaxTrees.CharacterExpression;
-import Triangle.AbstractSyntaxTrees.CharacterLiteral;
-import Triangle.AbstractSyntaxTrees.ConstActualParameter;
-import Triangle.AbstractSyntaxTrees.ConstDeclaration;
-import Triangle.AbstractSyntaxTrees.ConstFormalParameter;
-import Triangle.AbstractSyntaxTrees.Declaration;
-import Triangle.AbstractSyntaxTrees.DotVname;
-import Triangle.AbstractSyntaxTrees.EmptyActualParameterSequence;
-import Triangle.AbstractSyntaxTrees.EmptyCommand;
-import Triangle.AbstractSyntaxTrees.EmptyExpression;
-import Triangle.AbstractSyntaxTrees.EmptyFormalParameterSequence;
-import Triangle.AbstractSyntaxTrees.ErrorTypeDenoter;
-import Triangle.AbstractSyntaxTrees.FieldTypeDenoter;
-import Triangle.AbstractSyntaxTrees.FormalParameter;
-import Triangle.AbstractSyntaxTrees.FormalParameterSequence;
-import Triangle.AbstractSyntaxTrees.FuncActualParameter;
-import Triangle.AbstractSyntaxTrees.FuncDeclaration;
-import Triangle.AbstractSyntaxTrees.FuncFormalParameter;
-import Triangle.AbstractSyntaxTrees.Identifier;
-import Triangle.AbstractSyntaxTrees.IfCommand;
-import Triangle.AbstractSyntaxTrees.IfExpression;
-import Triangle.AbstractSyntaxTrees.IntTypeDenoter;
-import Triangle.AbstractSyntaxTrees.IntegerExpression;
-import Triangle.AbstractSyntaxTrees.IntegerLiteral;
-import Triangle.AbstractSyntaxTrees.LetCommand;
-import Triangle.AbstractSyntaxTrees.LetExpression;
-import Triangle.AbstractSyntaxTrees.MultipleActualParameterSequence;
-import Triangle.AbstractSyntaxTrees.MultipleArrayAggregate;
-import Triangle.AbstractSyntaxTrees.MultipleFieldTypeDenoter;
-import Triangle.AbstractSyntaxTrees.MultipleFormalParameterSequence;
-import Triangle.AbstractSyntaxTrees.MultipleRecordAggregate;
-import Triangle.AbstractSyntaxTrees.Operator;
-import Triangle.AbstractSyntaxTrees.ProcActualParameter;
-import Triangle.AbstractSyntaxTrees.ProcDeclaration;
-import Triangle.AbstractSyntaxTrees.ProcFormalParameter;
-import Triangle.AbstractSyntaxTrees.Program;
-import Triangle.AbstractSyntaxTrees.RecordExpression;
-import Triangle.AbstractSyntaxTrees.RecordTypeDenoter;
-import Triangle.AbstractSyntaxTrees.SequentialCommand;
-import Triangle.AbstractSyntaxTrees.SequentialDeclaration;
-import Triangle.AbstractSyntaxTrees.SimpleTypeDenoter;
-import Triangle.AbstractSyntaxTrees.SimpleVname;
-import Triangle.AbstractSyntaxTrees.SingleActualParameterSequence;
-import Triangle.AbstractSyntaxTrees.SingleArrayAggregate;
-import Triangle.AbstractSyntaxTrees.SingleFieldTypeDenoter;
-import Triangle.AbstractSyntaxTrees.SingleFormalParameterSequence;
-import Triangle.AbstractSyntaxTrees.SingleRecordAggregate;
-import Triangle.AbstractSyntaxTrees.SubscriptVname;
-import Triangle.AbstractSyntaxTrees.Terminal;
-import Triangle.AbstractSyntaxTrees.TypeDeclaration;
-import Triangle.AbstractSyntaxTrees.TypeDenoter;
-import Triangle.AbstractSyntaxTrees.UnaryExpression;
-import Triangle.AbstractSyntaxTrees.UnaryOperatorDeclaration;
-import Triangle.AbstractSyntaxTrees.VarActualParameter;
-import Triangle.AbstractSyntaxTrees.VarDeclaration;
-import Triangle.AbstractSyntaxTrees.VarFormalParameter;
-import Triangle.AbstractSyntaxTrees.Visitor;
-import Triangle.AbstractSyntaxTrees.VnameExpression;
-import Triangle.AbstractSyntaxTrees.WhileCommand;
+import Triangle.AbstractSyntaxTrees.*;
 import Triangle.SyntacticAnalyzer.SourcePosition;
 
 public final class Checker implements Visitor {
@@ -153,14 +88,48 @@ public final class Checker implements Visitor {
     ast.C.visit(this, null);
     return null;
   }
+  
+  //mark: checker for for command
+  public Object visitForCommand(ForCommand ast, Object o) {
+    TypeDenoter vType = (TypeDenoter) ast.V.visit(this, null);
+    if (! ast.V.variable)
+      reporter.reportError("identifier is not a variable", "", ast.V.position);
+    else if (! (vType instanceof IntTypeDenoter))
+      reporter.reportError("Integer expected here", "", ast.V.position);
+    TypeDenoter e1Type = (TypeDenoter) ast.E1.visit(this, null);
+    if (! e1Type.equals(vType))
+      reporter.reportError("wrong type for starting expression", "", ast.E1.position);
+    TypeDenoter e2Type = (TypeDenoter) ast.E2.visit(this, null);
+    if (! e2Type.equals(vType))
+      reporter.reportError("wrong type for ending expression", "", ast.E2.position);
+    ast.C.visit(this, null);
+    return null;
+  }
 
-/* mark */
- public Objext visitForCommand(ForCommand ast, Object o){
-     
-     
-     return null;
- }
- 
+  public Object visitCaseCommand(CaseCommand ast, Object o) {
+    idTable.openScope();
+    ast.E.visit(this, null);
+    if(ast.E.type != StdEnvironment.integerType)
+      reporter.reportError("incompatible expression type (Integer Expression expected)", "", ast.position);
+    LinkedHashMap<IntegerLiteral, Command> MAP = ast.MAP;
+    ArrayList<IntegerLiteral> AL = new ArrayList<IntegerLiteral>();
+    for(IntegerLiteral IL : MAP.keySet()){
+            for(IntegerLiteral IL2 : AL){
+                if (IL2.spelling.equals(IL.spelling)){
+                    reporter.reportError("re-used integer literal in case", "", ast.position);
+                }
+            }
+            Command C = MAP.get(IL);
+            C.visit(this, null);
+            IL.visit(this, null);
+            AL.add(IL);
+        }
+        Command C = ast.C;
+        C.visit(this, null);
+        idTable.closeScope();
+        return null;
+  }
+
   // Expressions
 
   // Returns the TypeDenoter denoting the type of the expression. Does
@@ -737,7 +706,7 @@ public final class Checker implements Visitor {
       else {
         if (! eType.equals(StdEnvironment.integerType))
           reporter.reportError ("Integer expression expected here", "",
-				ast.E.position);
+                ast.E.position);
         ast.type = ((ArrayTypeDenoter) vType).T;
       }
     }
