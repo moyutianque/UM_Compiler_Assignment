@@ -106,29 +106,6 @@ public final class Checker implements Visitor {
     return null;
   }
 
-  public Object visitCaseCommand(CaseCommand ast, Object o) {
-    idTable.openScope();
-    ast.E.visit(this, null);
-    if(ast.E.type != StdEnvironment.integerType)
-      reporter.reportError("incompatible expression type (Integer Expression expected)", "", ast.position);
-    LinkedHashMap<IntegerLiteral, Command> MAP = ast.MAP;
-    ArrayList<IntegerLiteral> AL = new ArrayList<IntegerLiteral>();
-    for(IntegerLiteral IL : MAP.keySet()){
-            for(IntegerLiteral IL2 : AL){
-                if (IL2.spelling.equals(IL.spelling)){
-                    reporter.reportError("re-used integer literal in case", "", ast.position);
-                }
-            }
-            Command C = MAP.get(IL);
-            C.visit(this, null);
-            IL.visit(this, null);
-            AL.add(IL);
-        }
-        Command C = ast.C;
-        C.visit(this, null);
-        idTable.closeScope();
-        return null;
-  }
 
   // Expressions
 

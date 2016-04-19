@@ -287,33 +287,6 @@ public class Parser {
       }
       break;
 
-    case Token.CASE:
-      {
-        LinkedHashMap <IntegerLiteral, Command> 
-        map = new LinkedHashMap<IntegerLiteral, Command>();
-        acceptIt();
-        Expression eAST = parseExpression();
-        accept(Token.OF);
-        IntegerLiteral ilAST = parseIntegerLiteral();
-        accept(Token.COLON);
-        Command cAST = parseSingleCommand();
-        accept(Token.SEMICOLON);
-        map.put(ilAST, cAST);
-        while(currentToken.kind != Token.ELSE) {
-          ilAST = parseIntegerLiteral();
-          accept(Token.COLON);
-          cAST = parseSingleCommand();
-          accept(Token.SEMICOLON);
-          map.put(ilAST, cAST);
-        }
-        accept(Token.ELSE);
-        accept(Token.COLON);
-        cAST = parseSingleCommand();
-        finish(commandPos);
-        commandAST = new CaseCommand(eAST, map, cAST, commandPos);
-      }
-      break;
-
     case Token.SEMICOLON:
     case Token.END:
     case Token.ELSE:

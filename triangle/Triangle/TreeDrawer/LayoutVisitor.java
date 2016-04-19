@@ -26,7 +26,6 @@ import Triangle.AbstractSyntaxTrees.BinaryOperatorDeclaration;
 import Triangle.AbstractSyntaxTrees.BoolTypeDenoter;
 import Triangle.AbstractSyntaxTrees.CallCommand;
 import Triangle.AbstractSyntaxTrees.CallExpression;
-import Triangle.AbstractSyntaxTrees.CaseCommand;
 import Triangle.AbstractSyntaxTrees.CharTypeDenoter;
 import Triangle.AbstractSyntaxTrees.CharacterExpression;
 import Triangle.AbstractSyntaxTrees.CharacterLiteral;
@@ -128,10 +127,6 @@ public class LayoutVisitor implements Visitor {
     return layoutQuaternary("ForCom.", ast.V, ast.E1, ast.E2, ast.C);
   }
 
-  public Object visitCaseCommand(CaseCommand caseCommand, Object o) {
-    // TODO Auto-generated method stub
-    return null;
-}
 
   // Expressions
   public Object visitArrayExpression(ArrayExpression ast, Object obj) {
