@@ -1,4 +1,3 @@
 # projectNB2
-triangle orignal files
 
-temporarily saved
+Project of complete the functions in the triangle language compiler
